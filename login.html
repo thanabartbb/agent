@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/assets/sdkspace-logo.svg">
+  <title>SDKSPACE · เข้าสู่ระบบ</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --surface: #10111c;
+      --border: #2a2a2a;
+      --border-hover: #3a3a3a;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --accent: #e9a077;
+      --btn-white: #f5f5f5;
+      --btn-white-text: #10111c;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 24px 16px;
+    }
+
+    .login {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Logo */
+    .logo-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: #141414;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .logo-wrap img {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* Brand title */
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .brand a { color: inherit; text-decoration: none; }
+    .brand a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .brand .sdk {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Form */
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .field input:focus {
+      border-color: #4a4a4a;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--btn-white);
+      color: var(--btn-white-text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-primary:hover {
+      background: #e8e8e8;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.985);
+    }
+
+    /* Divider */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0 12px;
+    }
+
+    /* Provider buttons */
+    .providers {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-provider {
+      position: relative;
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-provider:hover {
+      background: #171725;
+      border-color: var(--border-hover);
+    }
+
+    .btn-provider:active {
+      transform: scale(0.985);
+    }
+
+    .btn-provider .icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .btn-provider .icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .badge {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      line-height: 1.2;
+      white-space: nowrap;
+      box-shadow: 0 0 0 2px var(--bg);
+    }
+
+    /* Footer links */
+    .more-options {
+      margin-top: 20px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .more-options:hover {
+      color: var(--text-muted);
+    }
+
+    .signup {
+      margin-top: 28px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .signup a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .signup a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sign-in states (password step, messages) */
+    [hidden] { display: none !important; }
+
+    .auth-msg {
+      width: 100%;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      text-align: center;
+      min-height: 1.3em;
+    }
+
+    .auth-msg.err { color: var(--text); }
+    .auth-msg[data-state="error"] { color: #ffaaaa; }
+    .auth-msg[data-state="success"] { color: #9de2ff; }
+    .auth-links { width: 100%; display: flex; justify-content: flex-end; margin: 8px 0 18px; }
+    .auth-links a { color: var(--text-muted); font-size: .85rem; text-decoration: none; }
+    .auth-links a:hover { color: var(--text); }
+    .signup a { color: var(--accent); }
+
+    .ts-wrap { display: flex; justify-content: center; min-height: 0; }
+
+    .btn-primary:disabled { opacity: 0.6; cursor: wait; }
+
+    /* Subtle focus ring for keyboard */
+    .btn-primary:focus-visible,
+    .btn-provider:focus-visible,
+    .more-options:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+<link rel="stylesheet" href="/assets/layout.css?v=1">
+<link rel="stylesheet" href="/assets/theme.css?v=4"><link rel="stylesheet" href="/assets/editorial.css?v=1">
+</head>
+<body class="sdk-layout sdk-auth">
+<header class="sdk-site-header"><div class="sdk-frame sdk-header-row"><a class="sdk-brand" href="/loading"><img src="/assets/sdkspace-logo.svg" width="22" height="22" alt="">SDKSPACE</a></div></header>
+  <main class="login">
+    <!-- Logo -->
+    <div class="logo-wrap" aria-hidden="true">
+      <!-- โลโก้ Isuper agent - SDK: tile มาจาก .logo-wrap, ข้างในใช้เฉพาะรูปทรงสีขาวจาก logo.svg -->
+      <img src="/assets/sdkspace-logo.svg" width="72" height="72" alt="">
+    </div>
+
+    <h1 class="brand"><a href="/loading" aria-label="ดูหน้าแนะนำ SDKSPACE">SDKSPACE</a></h1>
+
+    <form data-email-login aria-label="เข้าสู่ระบบด้วยอีเมล">
+      <label class="field"><input name="email" type="email" autocomplete="email" placeholder="อีเมล" required></label>
+      <label class="field"><input name="password" type="password" autocomplete="current-password" placeholder="รหัสผ่าน" required></label>
+      <button class="btn-primary" type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <div class="auth-links"><a href="/forgot-password">ลืมรหัสผ่าน?</a></div>
+    <div class="divider" aria-hidden="true"></div>
+
+    <div class="providers" aria-label="เข้าสู่ระบบ">
+      <a class="btn-provider" href="/auth/google?return_to=/home">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-.9 2.2-1.9 2.9l3.1 2.4c1.8-1.7 2.9-4.1 2.9-7 0-.7-.1-1.3-.2-1.9H12z"/>
+            <path fill="#34A853" d="M5.3 14.3l-.8.6-2.4 1.9C3.8 20.2 7.6 23 12 23c2.7 0 5-.9 6.7-2.4l-3.1-2.4c-.9.6-2 1-3.6 1-2.8 0-5.1-1.9-6-4.4z"/>
+            <path fill="#FBBC05" d="M3.1 7.1C2.4 8.5 2 10.2 2 12s.4 3.5 1.1 4.9l3.2-2.5c-.2-.6-.3-1.2-.3-1.9 0-.7.1-1.4.3-2L3.1 7.1z"/>
+            <path fill="#4285F4" d="M12 4.8c1.5 0 2.8.5 3.9 1.5l2.9-2.9C16.9 1.7 14.7.8 12 .8 7.6.8 3.8 3.6 2.1 7.1l3.2 2.5C6.9 6.7 9.2 4.8 12 4.8z"/>
+          </svg>
+        </span>
+        เข้าสู่ระบบด้วย Google
+      </a>
+
+      <a class="btn-provider" href="/auth/github?return_to=/home">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .8A11.2 11.2 0 0 0 8.46 22.62c.56.1.76-.24.76-.54v-2.08c-3.1.68-3.76-1.32-3.76-1.32-.5-1.3-1.24-1.64-1.24-1.64-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 .1.84 2.14 3.22 1.55.1-.73.4-1.24.74-1.52-2.48-.28-5.08-1.24-5.08-5.54 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.08 1.15a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.54.23 2.68.11 2.96.72.78 1.14 1.78 1.14 3 0 4.31-2.61 5.25-5.1 5.53.42.36.79 1.07.79 2.16v3.21c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z"/></svg></span>
+        เข้าสู่ระบบด้วย GitHub
+      </a>
+
+    </div>
+    <p class="auth-msg" id="auth-notice" role="status" aria-live="polite"></p>
+    <p class="signup">ยังไม่มีบัญชี? <a href="/signup">สมัครใช้งาน</a></p>
+  </main>
+
+  <script type="module" src="/firebase-auth.js"></script>
+  <script>
+    const error = new URLSearchParams(location.search).get('auth_error');
+    if (error) document.getElementById('auth-notice').textContent = 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบการตั้งค่าหรือลองอีกครั้ง';
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exa Search · SDKSPACE</title>
+  <link rel="stylesheet" href="/assets/theme.css?v=4">
+  <link rel="stylesheet" href="/assets/layout.css?v=1">
+  <style>
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.exa-main{max-width:900px;margin:0 auto;padding:40px 24px 72px}.exa-main h1{margin:0 0 8px}.exa-main>p{color:var(--muted,#9aa4b2)}.exa-form{display:flex;gap:10px;margin:24px 0}.exa-form input{flex:1;min-width:0;padding:12px 14px;border:1px solid #394252;border-radius:10px;background:#111;color:#fff;font:inherit}.exa-form button{padding:12px 18px;border:0;border-radius:10px;background:#91a7bd;color:#080b10;font:inherit;font-weight:700;cursor:pointer}.exa-status{min-height:1.5em;color:#aab5c3}.exa-result{padding:18px 0;border-top:1px solid #303744}.exa-result h2{font-size:1.1rem;margin:0 0 8px}.exa-result a{color:#b5c9df}.exa-result p{line-height:1.65;color:#d5dbe3}.exa-result time{font-size:.85rem;color:#929cab}.exa-note{font-size:.9rem;color:#929cab}
+    @media(max-width:600px){.exa-main{padding:28px 16px 56px}.exa-form{flex-direction:column}}
+  </style>
+<link rel="stylesheet" href="/assets/editorial.css?v=1">
+</head>
+<body class="sdk-layout sdk-standard" data-shell-page="exa">
+  <header class="product-header sdk-site-header" data-app-shell><div class="container header-inner sdk-frame sdk-header-row"><a class="brand" href="/chat"><img class="brand-mark" src="/assets/sdkspace-logo.svg" alt="" width="22" height="22"><span class="brand-copy">SDKSPACE</span></a><nav class="shell-nav" aria-label="เมนูหลัก"><a class="shell-nav-link" href="/chat" data-shell-nav="chat">Chat</a><a class="shell-nav-link" href="/tools" data-shell-nav="tools">Tools</a><a class="shell-nav-link shell-nav-owner" href="/dev" data-shell-nav="dev" hidden>Owner</a></nav><div class="shell-end"><button type="button" class="shell-menu-btn" aria-expanded="false" aria-controls="shell-mobile-panel" aria-label="เปิดเมนู"><span aria-hidden="true">☰</span></button><div class="shell-profile" data-shell-profile aria-live="polite"><span class="shell-profile-name">…</span></div><a class="shell-logout" href="/auth/logout">Logout</a></div></div><div class="shell-mobile-panel" id="shell-mobile-panel" hidden></div></header>
+  <main class="exa-main">
+    <h1>ค้นหาด้วย Exa</h1>
+    <p>ระบุหัวข้อ ค้นหาแหล่งข้อมูล แล้วเปิดต้นฉบับเพื่อเปรียบเทียบและนำไปอ้างอิง</p>
+    <form class="exa-form" id="exa-form"><label class="sr-only" for="exa-query">คำค้นหา</label><input id="exa-query" name="query" maxlength="1000" required placeholder="พิมพ์สิ่งที่ต้องการค้นหา" autocomplete="off"><button type="submit">ค้นหา</button></form>
+    <p id="exa-status" class="exa-status" role="status" aria-live="polite"></p>
+    <section id="exa-results" aria-label="ผลการค้นหา"></section>
+    <p class="exa-note">ผลลัพธ์มาจาก Exa และอาจมีค่าใช้จ่ายตามบัญชี Exa ของคุณ</p>
+  </main>
+  <script src="/app-shell.js" defer></script>
+  <script>
+    const form = document.querySelector('#exa-form');
+    const queryInput = document.querySelector('#exa-query');
+    const statusNode = document.querySelector('#exa-status');
+    const resultsNode = document.querySelector('#exa-results');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+      statusNode.textContent = 'กำลังค้นหา…';
+      resultsNode.replaceChildren();
+      try {
+        const response = await fetch('/api/exa/search', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query, numResults: 5 }) });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.message || 'ค้นหาไม่สำเร็จ');
+        if (!data.results.length) { statusNode.textContent = 'ไม่พบผลลัพธ์'; return; }
+        statusNode.textContent = `พบ ${data.results.length} ผลลัพธ์`;
+        for (const result of data.results) {
+          const article = document.createElement('article'); article.className = 'exa-result';
+          const heading = document.createElement('h2'); const link = document.createElement('a'); link.href = result.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = result.title; heading.append(link); article.append(heading);
+          if (result.published_date) { const time = document.createElement('time'); time.textContent = result.published_date; article.append(time); }
+          for (const highlight of result.highlights) { const p = document.createElement('p'); p.textContent = highlight; article.append(p); }
+          resultsNode.append(article);
+        }
+      } catch (error) { statusNode.textContent = error.message || 'ค้นหาไม่สำเร็จ กรุณาลองใหม่'; }
+    });
+  </script>
+</body>
+</html>
+

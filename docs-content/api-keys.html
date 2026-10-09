@@ -1,0 +1,26 @@
+<h1>API key</h1>
+<p class="lead">สร้างข้อมูลยืนยันตัวตนของโปรเจกต์ แล้วใช้ SDK ส่งคำขอไปยัง API</p>
+<h2>สร้าง key</h2>
+<ol>
+  <li>เข้าสู่ระบบที่ agents-sdk.space</li>
+  <li>เปิดหน้า <a href="/keys">API keys</a> แล้วกด “สร้าง key ใหม่” จากนั้นกด “คัดลอก key” (key ไม่แสดงเต็มบนหน้าจอ)</li>
+  <li>คัดลอก key ทันที — ระบบแสดงครั้งเดียวและไม่เก็บไว้ให้ดูซ้ำ</li>
+</ol>
+<h2>คุณสมบัติของ key</h2>
+<table>
+  <tbody>
+    <tr><th>รูปแบบ</th><td><code>lsg_</code> + token ที่เซ็นด้วยกุญแจของเซิร์ฟเวอร์</td></tr>
+    <tr><th>อายุ</th><td>30 วันนับจากวันสร้าง</td></tr>
+    <tr><th>ผูกกับ</th><td>บัญชีที่สร้าง (ดูได้จาก <a href="/docs/api-me">GET /me</a>)</td></tr>
+    <tr><th>จำนวน</th><td>สร้างได้หลายตัว แต่ละตัวมี <code>key.id</code> ของตัวเอง</td></tr>
+  </tbody>
+</table>
+<h2>การส่ง key</h2>
+<p>SDK ส่ง header ให้อัตโนมัติ ถ้าเรียกเองให้ใส่:</p>
+<pre data-title="HTTP"><code>Authorization: Bearer lsg_your_key_here</code></pre>
+<h2>ความปลอดภัย</h2>
+<div class="callout warn">
+  <p>ตั้งค่า key ผ่าน environment variable หรือ <code>wrangler secret put</code></p>
+</div>
+<p>key ไม่มีการเก็บในฐานข้อมูล จึงยกเลิกทีละตัวไม่ได้ ถ้า key หลุดให้หยุดใช้และรอหมดอายุ หรือให้ผู้ดูแลเปลี่ยน <code>AUTH_SESSION_SECRET</code> ซึ่งจะยกเลิก key และ session ทั้งหมดพร้อมกัน</p>
+

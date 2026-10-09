@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="/assets/sdkspace-logo.svg">
+  <title>Chat · SDKSPACE</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg: #000000;
+      --surface: #10111c;
+      --line: #1f1f1f;
+      --border: #2a2a2a;
+      --text: #ffffff;
+      --muted: #8e8e93;
+      --radius: 12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding: 24px 16px 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* Top bar (same as the home page) */
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .brand img { width: 28px; height: 28px; object-fit: contain; }
+    .nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .nav a, .nav button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .nav a:hover, .nav button:hover { color: var(--text); }
+    .who { color: var(--muted); font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Model bar */
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .bar select {
+      height: 38px;
+      padding: 0 12px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      max-width: 100%;
+    }
+    .bar .quota { color: var(--muted); font-size: 13px; margin-left: auto; }
+    .bar .mode-label { color: var(--muted); font-size: 13px; }
+    .btn-ghost {
+      height: 38px;
+      padding: 0 14px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-ghost:hover { border-color: #3a3a3a; }
+
+    /* History panel */
+    .history {
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .history-empty { color: var(--muted); font-size: 13px; padding: 14px; }
+    .history-row { display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
+    .history-row:last-child { border-bottom: 0; }
+    .history-row.current { background: #16171f; }
+    .history-open {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 14px;
+      background: none;
+      border: 0;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .history-open small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .history-del {
+      margin-right: 8px;
+      padding: 4px 8px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .history-del:hover { color: var(--text); }
+
+    /* Chat */
+    .chat {
+      flex: 1;
+      min-height: 280px;
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: var(--surface);
+    }
+    .empty { color: var(--muted); text-align: center; padding: 48px 12px; font-size: 14px; line-height: 1.6; }
+    .bubble {
+      max-width: 88%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .bubble.u { margin-left: auto; background: #1c1c1e; }
+    .bubble.a { border: 1px solid var(--border); }
+    .bubble.e { border: 1px solid #3a3a3a; color: var(--muted); }
+    .bubble .meta { display: block; margin-top: 6px; font-size: 11px; color: #636366; }
+    .bubble .btn-ghost { margin-top: 10px; }
+    .github-tool-proposal { display: grid; gap: 10px; }
+    .github-tool-proposal strong { color: var(--text); }
+    .github-tool-proposal details { border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+    .github-tool-proposal summary { cursor: pointer; color: var(--muted); }
+    .github-tool-proposal pre { max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 0; font-size: 12px; }
+    .github-tool-proposal button { justify-self: start; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: #08090b; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .github-tool-proposal button:disabled { opacity: .6; cursor: wait; }
+    .github-tool-proposal p { overflow-wrap: anywhere; }
+    .thinking::after { content: ""; animation: dots 1.2s infinite; }
+    @keyframes dots { 0% { content: ""; } 33% { content: "."; } 66% { content: ".."; } 100% { content: "..."; } }
+
+    /* Composer */
+    .composer { display: flex; gap: 8px; margin-top: 12px; align-items: flex-end; }
+    .composer textarea {
+      flex: 1;
+      min-height: 48px;
+      max-height: 180px;
+      resize: none;
+      padding: 13px 14px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font: inherit;
+      font-size: 15px;
+      outline: none;
+    }
+    .composer textarea:focus { border-color: #4a4a4a; }
+    .send {
+      height: 48px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: var(--radius);
+      background: #f5f5f5;
+      color: #10111c;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .send:disabled { opacity: 0.5; cursor: not-allowed; }
+    .attach {
+      width: 48px;
+      height: 48px;
+      flex: none;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .attach:hover { color: var(--text); border-color: #3a3a3a; }
+    .attach:disabled { opacity: 0.5; cursor: not-allowed; }
+    .attach svg { width: 20px; height: 20px; }
+    .pending { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 220px;
+      padding: 6px 30px 6px 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chip img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+    .chip .pdf { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 6px; background: #1c1c1e; color: var(--text); font-weight: 600; font-size: 11px; }
+    .chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip button {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      background: none;
+      border: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .chip button:hover { color: var(--text); }
+    .bubble .files { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; margin-bottom: 8px; }
+    .bubble .files img { max-width: 160px; max-height: 160px; border-radius: 8px; display: block; }
+    .bubble .files .file-name { font-size: 12px; color: var(--muted); padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px; }
+    .chat.dragging { border-color: #4a4a4a; }
+    .hint { margin-top: 8px; font-size: 12px; color: #636366; line-height: 1.5; }
+    .hint a { color: var(--muted); }
+  </style>
+<link rel="stylesheet" href="/assets/layout.css?v=1">
+<link rel="stylesheet" href="/assets/theme.css?v=4"><link rel="stylesheet" href="/assets/editorial.css?v=1"><link rel="stylesheet" href="/assets/chat-tools.css?v=1">
+</head>
+<body class="sdk-layout sdk-chat">
+  <header class="top sdk-site-header"><div class="sdk-frame sdk-header-row">
+    <a class="brand" href="/home" aria-label="SDKSPACE home"><img src="/assets/sdkspace-logo.svg" width="28" height="28" alt="">SDKSPACE</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/home">หน้าแรก</a>
+      <span class="who" id="who"></span>
+      <button type="button" id="signout">Sign out</button>
+    </nav>
+  </div></header>
+<main class="sdk-frame sdk-chat-content">
+
+  <div class="bar">
+    <span id="mode-label" class="mode-label">แชท</span>
+    <span class="quota" id="quota"></span>
+    <button type="button" class="btn-ghost" id="history-toggle" aria-expanded="false" aria-controls="history" hidden>ประวัติ</button>
+    <button type="button" class="btn-ghost" id="clear">New chat</button>
+  </div>
+
+  <div class="history" id="history" hidden></div>
+
+  <div class="chat" id="chat" aria-live="polite">
+    <div class="empty" id="empty">ลองถามอะไรก็ได้เกี่ยวกับ AI SDK<br>เช่น "generateText ต่างจาก streamText ยังไง"</div>
+  </div>
+
+  <div class="pending" id="pending" hidden></div>
+  <form class="composer" id="composer">
+    <div class="chat-tools-wrap">
+      <button type="button" class="attach" id="attach" aria-label="เปิดเมนูเครื่องมือและไฟล์แนบ" title="เครื่องมือและไฟล์แนบ" aria-expanded="false" aria-controls="chat-tools-menu" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.4 11.1 12.2 20.3a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+      </button>
+      <section class="chat-tools-menu" id="chat-tools-menu" aria-label="ตัวเลือกเครื่องมือและโมเดล" hidden>
+        <div class="chat-tools-heading">
+          <strong>ตั้งค่าแชต</strong>
+          <button type="button" id="close-tools-menu" class="chat-tools-close" aria-label="ปิดเมนู">×</button>
+        </div>
+        <label class="chat-tools-field">เครื่องมือ
+          <select id="tool-choice">
+            <option value="chat">แชตทั่วไป</option>
+            <option value="code">เขียนและตรวจโค้ด</option>
+            <option value="research">ค้นคว้าพร้อมแหล่งอ้างอิง</option>
+            <option value="url">อ่าน URL</option>
+            <option value="writer">เขียนและปรับเนื้อหา</option>
+            <option value="image">สร้างภาพ</option>
+          </select>
+        </label>
+        <label class="chat-tools-field">ผู้ให้บริการ
+          <select id="provider" aria-label="ผู้ให้บริการ AI" disabled><option>กำลังโหลด…</option></select>
+        </label>
+        <label class="chat-tools-field">โมเดล
+          <select id="model-choice" aria-label="โมเดล AI" disabled><option value="">กำลังโหลด…</option></select>
+        </label>
+        <button type="button" id="choose-file" class="chat-tools-file" disabled>
+          <span aria-hidden="true">＋</span> แนบรูปภาพหรือ PDF
+        </button>
+        <p id="tool-description" class="chat-tools-description">ถาม อธิบาย และคิดงานทั่วไป</p>
+      </section>
+    </div>
+    <input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" multiple hidden>
+    <textarea id="input" rows="1" maxlength="12000" placeholder="พิมพ์ข้อความ…" disabled></textarea>
+    <button type="submit" class="send" id="send" disabled>ส่ง</button>
+
+  </form>
+  <p class="hint" id="hint">ระบุเป้าหมาย แนบบริบท แล้วเลือกคำตอบไปปรับใช้</p>
+
+</main>
+  <script src="/assets/chat.js?v=12"></script>
+</body>
+</html>

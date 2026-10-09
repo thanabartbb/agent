@@ -1,0 +1,8 @@
+/* Shared editorial typography and compact brand across complete page shells. */
+
+.sdk-header-row :is(.brand, .brand-link, .page-title, .sdk-brand) { font-size:12px; }
+.sdk-header-row :is(.brand, .page-title, .sdk-brand, .brand-link strong) { gap:4px; }
+.sdk-header-row .brand-mark { object-fit:contain; background:none; border:0; }
+.editorial-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:16px; margin:28px 0; }
+.editorial-grid a { display:block; padding:20px; border:1px solid var(--line); border-radius:12px; text-decoration:none; color:inherit; }
+.editorial-grid p { color:var(--muted); line-height:1.65; }
